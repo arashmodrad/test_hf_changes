@@ -23,3 +23,5 @@ body:
       label: "Describe the issue" # Visible label
       description: "What’s wrong with this item?" # Help text
       placeholder: "E.g. pin is offset 200 m north of actual location." # Example text
+
+      # This is a map error report
