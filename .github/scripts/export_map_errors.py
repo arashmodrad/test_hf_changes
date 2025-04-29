@@ -32,14 +32,11 @@ def parse_frontmatter(body: str) -> dict:
 
 
 def main():
-    # Setup argument parsing for label and output file name
     parser = argparse.ArgumentParser(description="Export GH issues with a specific label into CSV")
     parser.add_argument("--label", required=True, help="Label to filter issues (e.g. map-error)")
     parser.add_argument("--output", default="issues.csv", help="Name of the output CSV file")
     args = parser.parse_args()
 
-    # Get GitHub Token and Repo name from environment variables set by GitHub Actions
-    # REPO will be in the format "owner/repo" (e.g., "arashmodrad/test_hf_changes")
     token = os.environ.get("GITHUB_TOKEN")
     repo_name = os.environ.get("REPO")
 
@@ -51,42 +48,44 @@ def main():
         exit(1)
 
     try:
-        # Authenticate with GitHub API
         gh = Github(token)
-        # Get the repository object
         repo = gh.get_repo(repo_name)
 
-        # Fetch issues with the specified label that are currently open
-        print(f"Fetching issues with label '{args.label}' from {repo_name}...")
+        print(f"Attempting to fetch issues with state='open' and label='{args.label}' from {repo_name}...")
+        # Fetch issues
         issues = repo.get_issues(state="open", labels=[args.label])
 
-        # Open the specified output CSV file for writing
-        # newline="" is crucial for csv module to prevent extra blank rows
+        # --- ADD THIS LOGGING ---
+        issue_list = list(issues) # Convert iterator to list to get count and iterate again
+        print(f"Found {len(issue_list)} issues matching criteria.")
+        if not issue_list:
+             print("No issues found matching criteria. CSV will only contain header.")
+        # --- END ADDED LOGGING ---
+
+
         with open(args.output, mode="w", newline="", encoding="utf-8") as csvfile:
             writer = csv.writer(csvfile)
 
-            # Write the header row for the CSV
             writer.writerow(["issue_number", "item_identifier", "description", "reporter_user", "created_at_utc", "issue_url"])
 
-            # Iterate through the fetched issues
-            for issue in issues:
+            # --- CHANGE THIS LOOP TO USE THE LIST ---
+            # for issue in issues: # Original loop
+            for issue in issue_list: # Loop over the list instead
+            # --- END CHANGE ---
                 print(f"Processing issue #{issue.number}...")
-                # Parse the structured data from the issue body
-                data = parse_frontmatter(issue.body or "") # Use issue.body or empty string if body is None
+                data = parse_frontmatter(issue.body or "")
+                print(f"Parsed data for issue #{issue.number}: {data}") # Added logging
 
-                # Extract the specific fields, providing default empty strings if keys are missing
-                # .strip() removes leading/trailing whitespace
                 item_identifier = data.get("item-identifier", "").strip()
                 issue_description = data.get("issue-description", "").strip()
 
-                # Write a row to the CSV file
                 writer.writerow([
-                    issue.number, # Issue number
-                    item_identifier, # Data from the 'item-identifier' form field
-                    issue_description, # Data from the 'issue-description' form field
-                    issue.user.login, # GitHub username of the reporter
-                    issue.created_at.isoformat(), # Timestamp in ISO 8601 format (UTC)
-                    issue.html_url # URL of the issue on GitHub
+                    issue.number,
+                    item_identifier,
+                    issue_description,
+                    issue.user.login,
+                    issue.created_at.isoformat(),
+                    issue.html_url
                 ])
         print(f"Successfully exported issues to {args.output}")
 
