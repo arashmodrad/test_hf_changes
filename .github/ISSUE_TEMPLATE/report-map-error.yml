@@ -1,0 +1,68 @@
+# .github/ISSUE_TEMPLATE/report-map-error.yml
+# Defines a GitHub Issue Form so your "Map Item Error Report" shows up under "New issue".
+
+name: "Map Item Error Report"
+description: "Report an error on a map item by its identifier."
+title: "[Map Error] Report"
+labels:
+  - map-error
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a map item error!
+        Please provide the required details below.
+        The title will be automatically updated based on the Item Identifier.
+  - type: input
+    id: item-identifier
+    attributes:
+      label: "Item Identifier"
+      description: "The common identifier of the item on the map (e.g., nex-3844211)."
+      placeholder: "nex-3844211"
+    validations:
+      required: true
+  - type: dropdown
+    id: pick
+    attributes:
+      label: "Pick"
+      description: "Select the type of item."
+      options:
+        - divide
+        - flowpath
+        - hydrolocation
+        - POI
+        - nexus
+    validations:
+      required: true
+  - type: input
+    id: issue-type
+    attributes:
+      label: "Issue Type"
+      description: "Specify the type of issue (e.g., flowpath missing, flowpath wrong direction)."
+      placeholder: "flowpath missing"
+    validations:
+      required: true
+  - type: input
+    id: vpu
+    attributes:
+      label: "VPU"
+      description: "The VPU where the issue occurs (e.g., 01)."
+      placeholder: "01"
+    validations:
+      required: true
+  - type: input
+    id: topology-toid
+    attributes:
+      label: "Topology toid"
+      description: "The toid of the feature with the issue (e.g., wb-1455862). If applicable."
+      placeholder: "wb-1455862"
+    validations:
+      required: false
+  - type: textarea
+    id: issue-description
+    attributes:
+      label: "Describe the issue"
+      description: "Provide a summary of the issue."
+      placeholder: "E.g., the flowpath is missing in this area."
+    validations:
+      required: true
