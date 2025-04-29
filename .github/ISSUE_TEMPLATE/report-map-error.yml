@@ -1,19 +1,23 @@
-name: “Map Item Error Report”
-description: “Report an error on a map item by its identifier (hf_id).”
-title: “[Map Error] {{hf_id}}”
-labels: ["map-error"]
+# .github/ISSUE_TEMPLATE/report-map-error.yml
+# Defines a GitHub Issue Form so your "Map Item Error Report" shows up under "New issue".
+name: "Map Item Error Report"
+description: "Report an error on a map item by its identifier."
+# The issue title will be prefixed with [Map Error]
+title: "[Map Error] {{item-identifier}}"
+labels:
+  - map-error
 body:
   - type: input
-    id: hf_id
+    id: item-identifier
     attributes:
-      label: "hf_id"
-      description: "The common ID of the item on the map (e.g., hf_id or`POI-123`, or site_id)."
+      label: "Item Identifier"
+      description: "The common ID of the item on the map (e.g. POI-123)."
       placeholder: "POI-123"
       required: true
   - type: textarea
     id: issue-description
     attributes:
       label: "Describe the issue"
-      description: “What’s wrong with this item?”
+      description: "What’s wrong with this item?"
       placeholder: "E.g. pin is offset 200 m north of actual location."
       required: true

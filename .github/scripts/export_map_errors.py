@@ -8,21 +8,23 @@ import csv
 import argparse
 from github import Github
 
-def parse_frontmatter(body):
+
+def parse_frontmatter(body: str) -> dict:
     """
-    GitHub issue forms embed a JSON blob in an HTML comment:
+    GitHub Issue Forms embed a JSON blob in an HTML comment:
     <!-- {"item-identifier":"POI-123","issue-description":"..."} -->
     """
-    m = re.search(r"<!--\s*(\{.*?\})\s*-->", body, re.DOTALL)
-    if not m:
+    match = re.search(r'<!--\s*(\{.*?\})\s*-->', body, re.DOTALL)
+    if not match:
         return {}
-    return json.loads(m.group(1))
+    return json.loads(match.group(1))
+
 
 def main():
-    p = argparse.ArgumentParser()
-    p.add_argument("--label",    required=True)
-    p.add_argument("--output",   default="issues.csv")
-    args = p.parse_args()
+    parser = argparse.ArgumentParser(description="Export GH issues with a specific label into CSV")
+    parser.add_argument("--label", required=True, help="Label to filter issues (e.g. map-error)")
+    parser.add_argument("--output", default="issues.csv", help="Name of the output CSV file")
+    args = parser.parse_args()
 
     token = os.environ["GITHUB_TOKEN"]
     repo_name = os.environ["REPO"]
@@ -30,21 +32,19 @@ def main():
     repo = gh.get_repo(repo_name)
 
     issues = repo.get_issues(state="open", labels=[args.label])
-    with open(args.output, "w", newline="", encoding="utf-8") as f:
-        w = csv.writer(f)
-        w.writerow(["number","item_identifier","description","user","created_at","url"])
+    with open(args.output, mode="w", newline="", encoding="utf-8") as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(["number", "item_identifier", "description", "user", "created_at", "url"])
         for issue in issues:
             data = parse_frontmatter(issue.body or "")
-            item = data.get("item-identifier","").strip()
-            desc = data.get("issue-description","").strip()
-            w.writerow([
+            writer.writerow([
                 issue.number,
-                item,
-                desc,
+                data.get("item-identifier", "").strip(),
+                data.get("issue-description", "").strip(),
                 issue.user.login,
                 issue.created_at.isoformat(),
                 issue.html_url
             ])
 
-if __name__=="__main__":
+if __name__ == "__main__":
     main()

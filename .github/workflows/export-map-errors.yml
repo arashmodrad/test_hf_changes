@@ -1,42 +1,48 @@
+# .github/workflows/export-map-errors.yml
+# Uses built-in GITHUB_TOKEN; no need to set a custom token for public repos
 name: "Export Map-Error Reports to CSV"
 
 # Manually trigger or run on schedule
 on:
-  workflow_dispatch:       # add to the the Actions tab
+  workflow_dispatch:       # ➡️ allows manual runs from the Actions tab
+  # Uncomment below to run nightly
+  # schedule:
+  #   - cron: '0 0 * * *'    # daily at midnight UTC
 
 jobs:
   export:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the repo 
+      # 1. Checkout the repo (full history needed for GH API)
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
+      # 2. Set up Python
       - name: Set up Python 3.x
         uses: actions/setup-python@v4
         with:
           python-version: '3.x'
 
+      # 3. Install dependencies
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install PyGithub pandas
 
-      # Export issues to CSV
+      # 4. Export issues to CSV
       - name: Export "map-error" issues to CSV
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REPO: ${{ github.repository }}    
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # built-in token available automatically
+          REPO: ${{ github.repository }}             # e.g. "owner/repo"
         run: |
-          mkdir -p .github/scripts
           python .github/scripts/export_map_errors.py \
             --label map-error \
             --output map-error-reports.csv
 
-      # Upload the CSV as an artifact
+      # 5. Upload the CSV as an artifact
       - name: Upload CSV
         uses: actions/upload-artifact@v3
         with:
