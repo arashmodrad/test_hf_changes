@@ -15,7 +15,6 @@ body:
       label: "Item Identifier" # The visible label for the field
       description: "The common ID of the item on the map (e.g. POI-123)." # Help text
       placeholder: "POI-123" # Example text shown in the field
-    required: true # Makes this a required field
 
   # This defines the second field in the form
   - type: textarea # A multi-line text area field
@@ -24,4 +23,3 @@ body:
       label: "Describe the issue" # Visible label
       description: "What’s wrong with this item?" # Help text
       placeholder: "E.g. pin is offset 200 m north of actual location." # Example text
-    required: true # Makes this a required field
