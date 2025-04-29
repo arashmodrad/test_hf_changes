@@ -30,11 +30,10 @@ jobs:
           python-version: '3.x' # Use any recent 3.x version
 
       # 3. Install necessary Python dependencies
-      # PyGithub is required by the script. Pandas is not used by the script but was in your original list.
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install PyGithub # pandas # Removed pandas as it's not used by the script for efficiency
+          pip install PyGithub 
 
       # 4. Run the Python script to export issues
       - name: Export "map-error" issues to CSV
@@ -51,7 +50,8 @@ jobs:
       # 5. Upload the generated CSV file as a workflow artifact
       # This makes the file downloadable from the workflow run page
       - name: Upload CSV
-        uses: actions/upload-artifact@v3 # Use the official upload-artifact action
+        # CHANGED: Use a specific minor version tag instead of just 'v3'
+        uses: actions/upload-artifact@v3.1.4
         with:
           name: map-error-reports # The name for the artifact in the UI
           path: map-error-reports.csv # The file path to upload
