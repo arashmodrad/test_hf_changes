@@ -3,32 +3,74 @@
 
 import os
 import re
-import json
+import json # Keep json import, though not used in the new parse
 import csv
 import argparse
-# Make sure PyGithub is installed (handled by the workflow)
-from github import Github
+from github import Github # Make sure PyGithub is installed
 
+# --- MODIFIED parse_issue_body FUNCTION ---
+def parse_issue_body(body: str) -> dict:
+    """
+    Parses the issue body looking for markdown headers
+    to extract Item Identifier and Description.
+    This is a workaround if the Issue Form doesn't embed the JSON comment.
+    """
+    data = {}
+    if not body:
+        return data
 
-def parse_frontmatter(body: str) -> dict:
-    """
-    GitHub Issue Forms embed a JSON blob in an HTML comment:
-    <!-- {"item-identifier":"POI-123","issue-description":"..."} -->
-    This function extracts and parses that JSON.
-    """
-    # Regex to find the HTML comment containing the JSON string
-    # re.DOTALL is important to match across newlines within the comment
-    match = re.search(r'<!--\s*(\{.*?\})\s*-->', body, re.DOTALL)
-    if not match:
-        # If the comment isn't found (e.g., issue not created via the form)
-        return {}
-    try:
-        # Parse the JSON string found in the first capturing group
-        return json.loads(match.group(1))
-    except json.JSONDecodeError:
-        # Handle cases where the JSON might be malformed (unlikely with GH Forms)
-        print(f"Warning: Could not parse JSON from issue body: {body[:100]}...") # Print part of body for debugging
-        return {}
+    # Split the body into lines
+    lines = body.splitlines()
+
+    # Flags to know which section we are currently in
+    in_item_identifier_section = False
+    in_description_section = False
+
+    item_identifier_lines = []
+    description_lines = []
+
+    for line in lines:
+        # Normalize line (strip whitespace) for easier comparison
+        stripped_line = line.strip()
+
+        # Check for the start of the Item Identifier section
+        if stripped_line == "### Item Identifier":
+            # Reset state, start collecting lines for this section
+            in_item_identifier_section = True
+            in_description_section = False
+            continue # Skip the header line itself
+
+        # Check for the start of the Description section
+        elif stripped_line == "### Describe the issue":
+             # Reset state, start collecting lines for this section
+            in_item_identifier_section = False
+            in_description_section = True
+            continue # Skip the header line itself
+
+        # If we are not in any specific section, ignore the line (e.g. lines before first header)
+        if not in_item_identifier_section and not in_description_section:
+            continue
+
+        # If we are in a section, collect the line content
+        if in_item_identifier_section:
+            # Item identifier is usually a single line after the header
+            # We'll take the first non-empty line found in this section
+            if stripped_line and 'item-identifier' not in data: # Only take the first non-empty line
+                 data['item-identifier'] = stripped_line
+                 # We found it, stop collecting for this section
+                 in_item_identifier_section = False # Treat it as single-line field
+
+        elif in_description_section:
+            # Description can be multiple lines. Collect all non-empty lines.
+            if stripped_line:
+                description_lines.append(stripped_line)
+
+    # Join description lines into a single string
+    if description_lines:
+        data['issue-description'] = "\n".join(description_lines) # Join with newline
+
+    return data
+# --- END MODIFIED parse_issue_body FUNCTION ---
 
 
 def main():
@@ -52,30 +94,32 @@ def main():
         repo = gh.get_repo(repo_name)
 
         print(f"Attempting to fetch issues with state='open' and label='{args.label}' from {repo_name}...")
-        # Fetch issues
         issues = repo.get_issues(state="open", labels=[args.label])
 
-        # --- ADD THIS LOGGING ---
-        issue_list = list(issues) # Convert iterator to list to get count and iterate again
+        # --- Keep logging and list conversion from previous version ---
+        issue_list = list(issues)
         print(f"Found {len(issue_list)} issues matching criteria.")
         if not issue_list:
              print("No issues found matching criteria. CSV will only contain header.")
-        # --- END ADDED LOGGING ---
-
+        # --- End logging ---
 
         with open(args.output, mode="w", newline="", encoding="utf-8") as csvfile:
             writer = csv.writer(csvfile)
 
             writer.writerow(["issue_number", "item_identifier", "description", "reporter_user", "created_at_utc", "issue_url"])
 
-            # --- CHANGE THIS LOOP TO USE THE LIST ---
-            # for issue in issues: # Original loop
-            for issue in issue_list: # Loop over the list instead
-            # --- END CHANGE ---
+            # --- Loop over the list ---
+            for issue in issue_list:
+            # --- End loop ---
                 print(f"Processing issue #{issue.number}...")
-                data = parse_frontmatter(issue.body or "")
+                # --- CALL THE NEW PARSING FUNCTION ---
+                data = parse_issue_body(issue.body or "") # Use issue.body or empty string
+                # --- END CALL ---
                 print(f"Parsed data for issue #{issue.number}: {data}") # Added logging
 
+                # Extract the specific fields using the new data dictionary
+                # .strip() is applied to the collected lines in the parsing function now,
+                # but applying again here is harmless for robustness.
                 item_identifier = data.get("item-identifier", "").strip()
                 issue_description = data.get("issue-description", "").strip()
 
