@@ -1,0 +1,19 @@
+name: “Map Item Error Report”
+description: “Report an error on a map item by its identifier (hf_id).”
+title: “[Map Error] {{hf_id}}”
+labels: ["map-error"]
+body:
+  - type: input
+    id: hf_id
+    attributes:
+      label: "hf_id"
+      description: "The common ID of the item on the map (e.g., hf_id or`POI-123`, or site_id)."
+      placeholder: "POI-123"
+      required: true
+  - type: textarea
+    id: issue-description
+    attributes:
+      label: "Describe the issue"
+      description: “What’s wrong with this item?”
+      placeholder: "E.g. pin is offset 200 m north of actual location."
+      required: true
