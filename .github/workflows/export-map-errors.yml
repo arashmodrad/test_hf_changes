@@ -47,11 +47,11 @@ jobs:
             --label map-error \
             --output map-error-reports.csv # The name of the output file
 
-      # 5. Upload the generated CSV file as a workflow artifact
+      # 5. Upload the generated CSV file as an artifact
       # This makes the file downloadable from the workflow run page
       - name: Upload CSV
-        # CHANGED: Use a specific minor version tag instead of just 'v3'
-        uses: actions/upload-artifact@v3.1.4
+        # CHANGED: Use the latest stable major version v4
+        uses: actions/upload-artifact@v4
         with:
           name: map-error-reports # The name for the artifact in the UI
           path: map-error-reports.csv # The file path to upload
