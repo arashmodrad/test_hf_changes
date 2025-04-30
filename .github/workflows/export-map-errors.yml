@@ -8,6 +8,9 @@ on:
     types: [opened]
   workflow_dispatch:
 
+permissions:
+  issues: write
+
 jobs:
   update_title:
     if: github.event_name == 'issues'
