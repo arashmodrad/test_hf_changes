@@ -1,57 +1,62 @@
 # .github/workflows/export-map-errors.yml
 # Uses built-in GITHUB_TOKEN; no need to set a custom token for public repos
 
-name: "Export Map-Error Reports to CSV" # Name shown in the Actions tab
+name: Map Error Workflows
 
-# This section defines when the workflow runs
 on:
-  workflow_dispatch: # ➡️ allows manual runs from the Actions tab in GitHub UI
-  # Uncomment below to run nightly (schedule is in UTC)
-  # schedule:
-  #   - cron: '0 0 * * *' # Runs daily at midnight UTC
+  issues:
+    types: [opened]
+  workflow_dispatch:
 
 jobs:
-  export: # Define a job named 'export'
-    runs-on: ubuntu-latest # Use the latest Ubuntu runner environment
-
+  update_title:
+    if: github.event_name == 'issues'
+    runs-on: ubuntu-latest
     steps:
-      # 1. Checkout the repository code
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const body = issue.body;
+            const regex = /### Item Identifier\n\n(.+?)\n\n/;
+            const match = body.match(regex);
+            if (match) {
+              const itemIdentifier = match[1].trim();
+              const newTitle = `[Map Error] ${itemIdentifier}`;
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                title: newTitle
+              });
+            }
+
+  export:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
       - name: Checkout repository
-        uses: actions/checkout@v3 # Use the official checkout action
+        uses: actions/checkout@v3
         with:
-          # fetch-depth: 0 gets the full history, useful for some actions,
-          # though 1 is sufficient for this script which only needs file access
           fetch-depth: 0
-
-      # 2. Set up Python environment
       - name: Set up Python 3.x
-        uses: actions/setup-python@v4 # Use the official setup-python action
+        uses: actions/setup-python@v4
         with:
-          python-version: '3.x' # Use any recent 3.x version
-
-      # 3. Install necessary Python dependencies
+          python-version: '3.x'
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install PyGithub 
-
-      # 4. Run the Python script to export issues
+          pip install PyGithub
       - name: Export "map-error" issues to CSV
-        # Set environment variables required by the script
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Built-in token, automatically available
-          REPO: ${{ github.repository }}             # Automatically gets the repo name (e.g. "arashmodrad/test_hf_changes")
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
         run: |
-          # Execute the python script with the specified arguments
           python .github/scripts/export_map_errors.py \
             --label map-error \
-            --output map-error-reports.csv # The name of the output file
-
-      # 5. Upload the generated CSV file as an artifact
-      # This makes the file downloadable from the workflow run page
+            --output map-error-reports.csv
       - name: Upload CSV
-        # CHANGED: Use the latest stable major version v4
         uses: actions/upload-artifact@v4
         with:
-          name: map-error-reports # The name for the artifact in the UI
-          path: map-error-reports.csv # The file path to upload
+          name: map-error-reports
+          path: map-error-reports.csv

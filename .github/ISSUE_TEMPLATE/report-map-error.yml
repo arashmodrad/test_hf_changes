@@ -3,25 +3,34 @@
 
 name: "Map Item Error Report"
 description: "Report an error on a map item by its identifier."
-# The issue title will be prefixed with [Map Error] and include the item identifier from the form
-title: "[Map Error] {{item-identifier}}"
+title: "[Map Error] Report" # Kept this title exactly as requested
 labels:
-  - map-error # Automatically adds the 'map-error' label to categorize these issues
+  - map-error
 body:
-  # This defines the first field in the form
-  - type: input # A single-line text input field
-    id: item-identifier # Unique ID for this field, used internally and in the issue body comment
+  - type: markdown
     attributes:
-      label: "Item Identifier" # The visible label for the field
-      description: "The common ID of the item on the map (e.g. POI-123)." # Help text
-      placeholder: "POI-123" # Example text shown in the field
+      # Added text block mentioning not to change the title
+      value: |
+        Thanks for reporting a map item error!
+        Please provide the required details below.
 
-  # This defines the second field in the form
-  - type: textarea # A multi-line text area field
-    id: issue-description # Unique ID for this field
+        **Important:** Please do not change the automatically set title "[Map Error] Report]".
+        This helps us categorize the reports efficiently.
+
+  - type: input
+    id: item-identifier
     attributes:
-      label: "Describe the issue" # Visible label
-      description: "What’s wrong with this item?" # Help text
-      placeholder: "E.g. pin is offset 200 m north of actual location." # Example text
+      label: "Item Identifier"
+      description: "The common ID of the item on the map (e.g. POI-123)."
+      placeholder: "POI-123"
+    validations:
+      required: true # Added validation - highly recommended for identifiers
 
-      # This is a map error report
+  - type: textarea
+    id: issue-description
+    attributes:
+      label: "Describe the issue"
+      description: "What’s wrong with this item?"
+      placeholder: "E.g. pin is offset 200 m north of actual location."
+    validations:
+      required: true # Added validation - the description is usually required
