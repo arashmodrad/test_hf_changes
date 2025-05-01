@@ -1,0 +1,56 @@
+# .github/ISSUE_TEMPLATE/03-reid-divide.yml
+# Defines a GitHub Issue Form so your "Map Item Error Report" shows up under "New issue".
+
+name: "Map Error: Reid Divide"
+description: "Report divide reidentification issues."
+title: "[Map Error] <item-identifier> Reid Divide"
+labels:
+  - reid_divide-merge-flowpaths
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a map item error!
+        Please provide the required details below.
+        The title will be automatically updated based on the Item Identifier.
+        Use this map to identify the item: [Map](https://spatial.dev.water.noaa.gov/view/hydrofabric).
+  - type: input
+    id: item-identifier
+    attributes:
+      label: "Item Identifier"
+      description: "The current divide id (e.g., cat-620629)."
+      placeholder: "cat-620629"
+    validations:
+      required: true
+  - type: input
+    id: new-id
+    attributes:
+      label: "New ID"
+      description: "The new divide id (e.g., cat-620630)."
+      placeholder: "cat-620630"
+    validations:
+      required: true
+  - type: input
+    id: vpu
+    attributes:
+      label: "VPU"
+      description: "The VPU where the issue occurs (e.g., 01)."
+      placeholder: "01"
+  - type: dropdown
+    id: issue-type
+    attributes:
+      label: "Issue Type"
+      description: "Select the type of issue."
+      options:
+        - divide reidentification
+        - other
+    validations:
+      required: true
+  - type: textarea
+    id: issue-description
+    attributes:
+      label: "Describe the issue"
+      description: "Provide a summary of the issue."
+      placeholder: "E.g., this divide needs to be reidentified."
+    validations:
+      required: true

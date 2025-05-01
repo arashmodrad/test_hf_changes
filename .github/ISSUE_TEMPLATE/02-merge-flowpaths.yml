@@ -1,0 +1,55 @@
+# .github/ISSUE_TEMPLATE/02-merge-flowpaths.yml
+# Defines a GitHub Issue Form so your "Map Item Error Report" shows up under "New issue".
+
+name: "Map Error: Merge Flowpaths"
+description: "Report flowpath merging issues."
+title: "[Map Error] Merge Flowpaths"
+labels:
+  - map-error-merge-flowpaths
+body:
+  - type: input
+    id: item-identifier
+    attributes:
+      label: "Item Identifier"
+      description: "The new flowpath id (e.g., wb-620629)."
+      placeholder: "wb-620629"
+    validations:
+      required: true
+  - type: input
+    id: topology-toid
+    attributes:
+      label: "Topology toid"
+      description: "The toid of the feature (e.g., wb-609109)."
+      placeholder: "wb-609109"
+  - type: input
+    id: ds-to-merge
+    attributes:
+      label: "DS to Merge"
+      description: "List of flowpaths to merge (e.g., 'wb-620629,wb-620609,wb-620589,wb-609109')."
+      placeholder: "wb-620629,wb-620609,wb-620589,wb-609109"
+    validations:
+      required: true
+  - type: input
+    id: vpu
+    attributes:
+      label: "VPU"
+      description: "The VPU where the issue occurs (e.g., 01)."
+      placeholder: "01"
+  - type: dropdown
+    id: issue-type
+    attributes:
+      label: "Issue Type"
+      description: "Select the type of issue."
+      options:
+        - flowpath merging
+        - other
+    validations:
+      required: true
+  - type: textarea
+    id: issue-description
+    attributes:
+      label: "Describe the issue"
+      description: "Provide a summary of the issue."
+      placeholder: "E.g., these flowpaths need to be merged."
+    validations:
+      required: true

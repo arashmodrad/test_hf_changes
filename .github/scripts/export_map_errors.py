@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 # .github/scripts/export_map_errors.py
 
+#!/usr/bin/env python3
 import os
-import re
-import json 
 import csv
 import argparse
-from github import Github # Make sure PyGithub is installed
+from github import Github
 
 def parse_issue_body(body: str) -> dict:
     data = {}
@@ -30,7 +29,7 @@ def parse_issue_body(body: str) -> dict:
 
 def main():
     parser = argparse.ArgumentParser(description="Export GH issues with a specific label into CSV")
-    parser.add_argument("--label", required=True, help="Label to filter issues (e.g. map-error)")
+    parser.add_argument("--label", required=True, help="Label to filter issues (e.g. map-error-topo-fixes)")
     parser.add_argument("--output", default="issues.csv", help="Name of the output CSV file")
     args = parser.parse_args()
 
@@ -59,10 +58,12 @@ def main():
             writer.writerow([
                 "issue_number",
                 "item_identifier",
-                "pick",
-                "issue_type",
-                "vpu",
                 "topology_toid",
+                "ds_to_merge",
+                "new_id",
+                "id_to_merge",
+                "vpu",
+                "issue_type",
                 "description",
                 "reporter_user",
                 "created_at_utc",
@@ -75,10 +76,12 @@ def main():
                 writer.writerow([
                     issue.number,
                     data.get("Item Identifier", ""),
-                    data.get("Pick", ""),
-                    data.get("Issue Type", ""),
-                    data.get("VPU", ""),
                     data.get("Topology toid", ""),
+                    data.get("DS to Merge", ""),
+                    data.get("New ID", ""),
+                    data.get("IDs to Merge", ""),
+                    data.get("VPU", ""),
+                    data.get("Issue Type", ""),
                     data.get("Describe the issue", ""),
                     issue.user.login,
                     issue.created_at.isoformat(),
