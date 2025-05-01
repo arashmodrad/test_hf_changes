@@ -66,13 +66,18 @@ def main():
                 "issue_type",
                 "description",
                 "reporter_user",
+                "assignees",          
                 "created_at_utc",
                 "issue_url"
             ])
+
             for issue in issue_list:
                 print(f"Processing issue #{issue.number}...")
-                data = parse_issue_body(issue.body or "")
+                data = parse_issue_body(issue.body or "")  
                 print(f"Parsed data for issue #{issue.number}: {data}")
+
+                assignees = ", ".join([assignee.login for assignee in issue.assignees])
+
                 writer.writerow([
                     issue.number,
                     data.get("Item Identifier", ""),
@@ -84,6 +89,7 @@ def main():
                     data.get("Issue Type", ""),
                     data.get("Describe the issue", ""),
                     issue.user.login,
+                    assignees,          
                     issue.created_at.isoformat(),
                     issue.html_url
                 ])
