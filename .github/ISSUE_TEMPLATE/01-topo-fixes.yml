@@ -1,0 +1,55 @@
+# .github/ISSUE_TEMPLATE/01-topo-fixes.yml
+# Defines a GitHub Issue Form so your "Map Item Error Report" shows up under "New issue".
+
+name: "Map Error: Topo Fixes"
+description: "Report topology fixes for map items."
+title: "[Map Error] <item-identifier> Topo Fixes"
+labels:
+  - map-error-topo-fixes
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a map item error!
+        Please provide the required details below.
+        The title will be automatically updated based on the Item Identifier.
+        Use this map to identify the item: [Map](https://spatial.dev.water.noaa.gov/view/hydrofabric).
+  - type: input
+    id: item-identifier
+    attributes:
+      label: "Item Identifier"
+      description: "The identifier of the item (e.g., wb-1455862)."
+      placeholder: "wb-1455862"
+    validations:
+      required: true
+  - type: input
+    id: topology-toid
+    attributes:
+      label: "Topology toid"
+      description: "The toid of the feature (e.g., wb-1455862)."
+      placeholder: "wb-1455862"
+  - type: input
+    id: vpu
+    attributes:
+      label: "VPU"
+      description: "The VPU where the issue occurs (e.g., 01)."
+      placeholder: "01"
+  - type: dropdown
+    id: issue-type
+    attributes:
+      label: "Issue Type"
+      description: "Select the type of issue."
+      options:
+        - flowpath missing
+        - flowpath wrong direction
+        - other
+    validations:
+      required: true
+  - type: textarea
+    id: issue-description
+    attributes:
+      label: "Describe the issue"
+      description: "Provide a summary of the issue."
+      placeholder: "E.g., the flowpath is missing in this area."
+    validations:
+      required: true

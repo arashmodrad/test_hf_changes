@@ -1,0 +1,56 @@
+# .github/ISSUE_TEMPLATE/05-union-divides.yml
+# Defines a GitHub Issue Form so your "Map Item Error Report" shows up under "New issue".
+
+name: "Map Error: Union Divides"
+description: "Report divides that need to be unioned."
+title: "[Map Error] <item-identifier> Union Divides"
+labels:
+  - reid_divide-union-divides
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a map item error!
+        Please provide the required details below.
+        The title will be automatically updated based on the Item Identifier.
+        Use this map to identify the item: [Map](https://spatial.dev.water.noaa.gov/view/hydrofabric).
+  - type: input
+    id: item-identifier
+    attributes:
+      label: "Item Identifier"
+      description: "The new divide id (e.g., cat-620629)."
+      placeholder: "cat-620629"
+    validations:
+      required: true
+  - type: input
+    id: id-to-merge
+    attributes:
+      label: "IDs to Merge"
+      description: "List of divide ids to merge (e.g., 'cat-620629,cat-620630,cat-620631')."
+      placeholder: "cat-620629,cat-620630,cat-620631"
+    validations:
+      required: true
+  - type: input
+    id: vpu
+    attributes:
+      label: "VPU"
+      description: "The VPU where the issue occurs (e.g., 01)."
+      placeholder: "01"
+  - type: dropdown
+    id: issue-type
+    attributes:
+      label: "Issue Type"
+      description: "Select the type of issue."
+      options:
+        - divide union
+        - other
+    validations:
+      required: true
+  - type: textarea
+    id: issue-description
+    attributes:
+      label: "Describe the issue"
+      description: "Provide a summary of the issue."
+      placeholder: "E.g., these divides need to be unioned."
+    validations:
+      required: true

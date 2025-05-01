@@ -8,12 +8,11 @@ on:
     types: [opened]
   workflow_dispatch:
 
-permissions:
-  issues: write
-
 jobs:
   update_title:
-    if: github.event_name == 'issues'
+    permissions:
+      issues: write
+    if: github.event_name == 'issues' && github.event.action == 'opened'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/github-script@v6
@@ -35,6 +34,8 @@ jobs:
             }
 
   export:
+    permissions:
+      issues: read
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
@@ -50,16 +51,23 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install PyGithub
-      - name: Export "map-error" issues to CSV
+      - name: Export issues to CSV
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
         run: |
-          python .github/scripts/export_map_errors.py \
-            --label map-error \
-            --output map-error-reports.csv
-      - name: Upload CSV
+          labels=("map-error-topo-fixes" "map-error-merge-flowpaths" "reid_divide-merge-flowpaths" "reid_divide-remove-flowpaths" "reid_divide-union-divides" "map-error-hydrolocations")
+          for label in "${labels[@]}"; do
+            python .github/scripts/export_map_errors.py --label "$label" --output "${label}.csv"
+          done
+      - name: Upload CSVs
         uses: actions/upload-artifact@v4
         with:
           name: map-error-reports
-          path: map-error-reports.csv
+          path: |
+            map-error-topo-fixes.csv
+            map-error-merge-flowpaths.csv
+            reid_divide-merge-flowpaths.csv
+            reid_divide-remove-flowpaths.csv
+            reid_divide-union-divides.csv
+            map-error-hydrolocations.csv
