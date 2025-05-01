@@ -2,11 +2,17 @@
 # Defines a GitHub Issue Form so your "Map Item Error Report" shows up under "New issue".
 
 name: "Map Error: Merge Flowpaths"
-description: "Report flowpath merging issues."
+description: "Report flowpath merging issues.\n The title should not be changed and will be automatically updated based on the Item Identifier."
 title: "[Map Error] Merge Flowpaths"
 labels:
   - map-error-merge-flowpaths
 body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a map item error!
+        Please provide the required details below.
+        Use this map to identify the item: [Map](https://spatial.dev.water.noaa.gov/view/hydrofabric).
   - type: input
     id: item-identifier
     attributes:
