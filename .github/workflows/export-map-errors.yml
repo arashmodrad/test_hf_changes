@@ -59,10 +59,10 @@ jobs:
             const longitudeMatch = body.match(longitudeRegex);
             const epsgMatch = body.match(epsgRegex);
             const issueType = issueTypeMatch ? issueTypeMatch[1].trim() : '';
-            const newId = newIdMatch && newIdMatch[1] ? newIdMatch[1].trim() : '';
-            const latitude = latitudeMatch && latitudeMatch[1] ? latitudeMatch[1].trim() : '';
-            const longitude = longitudeMatch && longitudeMatch[1] ? longitudeMatch[1].trim() : '';
-            const epsg = epsgMatch && epsgMatch[1] ? epsgMatch[1].trim() : '';
+            const newId = newIdMatch && newIdMatch[1] && newIdMatch[1].trim() !== '_No response_' ? newIdMatch[1].trim() : '';
+            const latitude = latitudeMatch && latitudeMatch[1] && latitudeMatch[1].trim() !== '_No response_' ? latitudeMatch[1].trim() : '';
+            const longitude = longitudeMatch && longitudeMatch[1] && longitudeMatch[1].trim() !== '_No response_' ? longitudeMatch[1].trim() : '';
+            const epsg = epsgMatch && epsgMatch[1] && epsgMatch[1].trim() !== '_No response_' ? epsgMatch[1].trim() : '';
             const comments = [];
             if (issueType === 'Not indexed to the right flowpath' && !newId) {
               comments.push('Please provide a New ID for the correct flowpath, as you selected "Not indexed to the right flowpath".');
@@ -87,7 +87,6 @@ jobs:
                 body: comments.join('\n\n')
               });
             }
-
 
   export:
     permissions:
