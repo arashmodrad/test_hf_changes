@@ -5,7 +5,7 @@ name: Map Error Workflows
 
 on:
   issues:
-    types: [opened]
+    types: [opened, edited]
   workflow_dispatch:
 
 jobs:
@@ -36,7 +36,7 @@ jobs:
   validate_hydrolocations:
     permissions:
       issues: write
-    if: github.event_name == 'issues' && github.event.action == 'opened'
+    if: github.event_name == 'issues' && (github.event.action == 'opened' || github.event.action == 'edited')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/github-script@v6
@@ -63,29 +63,28 @@ jobs:
             const latitude = latitudeMatch && latitudeMatch[1] ? latitudeMatch[1].trim() : '';
             const longitude = longitudeMatch && longitudeMatch[1] ? longitudeMatch[1].trim() : '';
             const epsg = epsgMatch && epsgMatch[1] ? epsgMatch[1].trim() : '';
-            let comment = '';
-            if (issueType === 'Not indexed to the right flowpath') {
-              if (!newId) {
-                comment = 'Please provide a New ID for the correct flowpath, as you selected "Not indexed to the right flowpath".';
-              }
-            } else if (issueType === 'Add a hydrolocation feature') {
+            const comments = [];
+            if (issueType === 'Not indexed to the right flowpath' && !newId) {
+              comments.push('Please provide a New ID for the correct flowpath, as you selected "Not indexed to the right flowpath".');
+            }
+            if (issueType === 'Add a hydrolocation feature') {
               const missingFields = [];
               if (!latitude) missingFields.push('Latitude');
               if (!longitude) missingFields.push('Longitude');
               if (!epsg) missingFields.push('EPSG Code');
               if (missingFields.length > 0) {
-                comment = `Please provide the following details for "Add a hydrolocation feature": ${missingFields.join(', ')}.`;
+                comments.push(`Please provide the following details for "Add a hydrolocation feature": ${missingFields.join(', ')}.`);
               }
               if (newId) {
-                comment += (comment ? '\n' : '') + 'A New ID was provided, but it is only needed when "Not indexed to the right flowpath" is selected. Please update description if this is intentional.';
+                comments.push('A New ID was provided, but it is only needed when "Not indexed to the right flowpath" is selected. Please confirm if this is intentional.');
               }
             }
-            if (comment) {
+            if (comments.length > 0) {
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: issue.number,
-                body: comment
+                body: comments.join('\n\n')
               });
             }
 
