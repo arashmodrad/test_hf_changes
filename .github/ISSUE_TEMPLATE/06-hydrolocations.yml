@@ -18,11 +18,18 @@ body:
     id: item-identifier
     attributes:
       label: "Item Identifier"
-      description: "The hydrolocation id (e.g., poi_id 3366)."
-      placeholder: "poi_id 3366"
+      description: "The flowpath id (e.g., wb-620629)."
+      placeholder: "wb-620629"
     validations:
       required: true
-      
+  - type: input
+    id: item-poi_id
+    attributes:
+      label: "POI Identifier"
+      description: "The hydrolocation poi_id (e.g., 3366)."
+      placeholder: "3366"
+    validations:
+      required: true    
   - type: input
     id: vpu
     attributes:
@@ -41,9 +48,18 @@ body:
         - Add a hydrolocation feature
     validations:
       required: true
+  - type: input
+    id: new-id
+    attributes:
+      label: "New ID"
+      description: "If 'Not indexed to the right flowpath' is selected, provide the new ID for the correct flowpath (e.g., wb-1455863). Leave blank otherwise."
+      placeholder: "wb-1455863"
+    validations:
+      required: false
   - type: markdown
     attributes:
       value: |
+        If 'add a hydrolocation feature' is selected, provide the coordinates and crs of the new hydrolocation feature. Leave blank otherwise.
         **Coordinates Example:**
         - Latitude: 37.7749
         - Longitude: -122.4194
@@ -55,7 +71,7 @@ body:
       description: "The latitude coordinate of the issue location."
       placeholder: "37.7749"
     validations:
-      required: true
+      required: false
   - type: input
     id: longitude
     attributes:
@@ -63,7 +79,7 @@ body:
       description: "The longitude coordinate of the issue location."
       placeholder: "-122.4194"
     validations:
-      required: true
+      required: false
   - type: input
     id: epsg-code
     attributes:
@@ -71,7 +87,7 @@ body:
       description: "Enter the numerical EPSG code of the coordinate reference system (e.g., 5070 for NAD83 / Conus Albers)."
       placeholder: "5070"
     validations:
-      required: true
+      required: false
   - type: dropdown
     id: hf-version
     attributes:
