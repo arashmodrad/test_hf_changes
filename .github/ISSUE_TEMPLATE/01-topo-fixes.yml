@@ -39,13 +39,12 @@ body:
     validations:
       required: true
   - type: dropdown
-    id: issue-type
+    id: hf-version
     attributes:
-      label: "Issue Type"
-      description: "Select the type of issue."
+      label: "Hydrofabric Version"
+      description: "Select the type of hydrofabric version."
       options:
-        - flowpath missing
-        - flowpath wrong direction
+        - v2.2
         - other
     validations:
       required: true
@@ -53,7 +52,7 @@ body:
     id: issue-description
     attributes:
       label: "Describe the issue"
-      description: "Provide a summary of the issue."
-      placeholder: "E.g., the flowpath is missing in this area."
+      description: "Provide a summary of the issue. **Optional:** You can upload an image by dragging and dropping it into the issue description or by using the 'Attach files' feature below."
+      placeholder: "E.g., the flowpath should drain to a water body with specific identifier..."
     validations:
       required: false
